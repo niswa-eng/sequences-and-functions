@@ -1,0 +1,6 @@
+{
+  "name": "Maths Teacher Board: Stage 7, Unit 9 Sequences and functions",
+  "description": "Teacher-led, whiteboard-style interactive flat panel board for Cambridge Stage 7 Unit 9 Sequences and functions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

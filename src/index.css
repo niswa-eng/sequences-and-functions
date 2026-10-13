@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    font-family: 'Atkinson Hyperlegible', 'Nunito', system-ui, -apple-system, sans-serif;
+    color: #0F2042;
+    background-color: #FAF7F0;
+  }
+
+  body {
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
+/* Ensure math formulas render cleanly and legibly on projector */
+.katex {
+  font-size: 1.15em !important;
+}
+
+/* Touch targets and high contrast helper classes */
+.touch-target-lg {
+  min-height: 64px;
+  min-width: 64px;
+}
