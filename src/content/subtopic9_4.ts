@@ -174,7 +174,7 @@ export const subtopic9_4: Subtopic = {
       title: 'Words to Functions',
       keyTerms: ['Real life', 'Word problem'],
       sentences: [
-        '"Each notebook costs $2": cost y = 2x where x is the number of notebooks.',
+        '"Each notebook costs 2 dollars": cost y = 2x where x is the number of notebooks.',
         '"Sam is 3 years older than Lee": Sam\'s age y = x + 3 where x is Lee\'s age.',
       ],
       componentType: 'MappingTable',
@@ -388,7 +388,7 @@ export const subtopic9_4: Subtopic = {
       practiceLevel: 'L2',
       practiceQuestion: {
         questionNumber: 6,
-        text: 'Pencils cost $2 each.\n\na) Write a function for the cost y of x pencils.\nb) Work out the cost of 9 pencils.\nc) Work out how many pencils are bought for $30.',
+        text: 'Pencils cost 2 dollars each.\n\na) Write a function for the cost y of x pencils.\nb) Work out the cost of 9 pencils.\nc) Work out how many pencils are bought for 30 dollars.',
       },
     },
 

@@ -193,7 +193,7 @@ export const subtopic9_3: Subtopic = {
       ],
       componentType: 'PositionTermTable',
       componentProps: {
-        ruleName: '5n = \\text{Term}',
+        ruleName: '5n',
         positions: [11, 12, 13, 14],
         computeFn: (n: number) => 5 * n,
         calculationLabel: (n: number) => `5 × ${n} = ${5 * n}`,

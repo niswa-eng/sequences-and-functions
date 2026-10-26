@@ -290,7 +290,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
 
                   {st.math && (
                     <div className="text-lg font-black text-[#0F2042] my-0.5 font-mono">
-                      <MathText>{st.math}</MathText>
+                      <MathText mathMode displayMode>{st.math}</MathText>
                     </div>
                   )}
 
