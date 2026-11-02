@@ -1,5 +1,7 @@
 export type SubtopicId = '9.1' | '9.2' | '9.3' | '9.4';
 
+export type Language = 'en' | 'id' | 'uz';
+
 export type StepType =
   | 'objective'
   | 'concept'

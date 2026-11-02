@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { SubtopicId, ToolType, Stroke } from './types';
+import { SubtopicId, ToolType, Stroke, Language } from './types';
 import { allSubtopics, getSubtopicById } from './content';
 import { TopBar, UiScaleOption } from './components/navigation/TopBar';
 import { BottomBar } from './components/navigation/BottomBar';
@@ -12,6 +12,11 @@ export default function App() {
   // Current active subtopic
   const [currentSubtopicId, setCurrentSubtopicId] = useState<SubtopicId>(() => {
     return (localStorage.getItem('maths_board_subtopic') as SubtopicId) || '9.1';
+  });
+
+  // Current active language: 'en' | 'id' | 'uz'
+  const [language, setLanguage] = useState<Language>(() => {
+    return (localStorage.getItem('maths_board_language') as Language) || 'en';
   });
 
   // Remember last visited step per subtopic
@@ -28,12 +33,12 @@ export default function App() {
     };
   });
 
-  // Screen zoom / scale state (default 90% for comfortable fit on all IFPs, tablets and laptops)
+  // Screen zoom / scale state
   const [uiScale, setUiScale] = useState<UiScaleOption>(() => {
     return (localStorage.getItem('maths_board_scale') as UiScaleOption) || '90';
   });
 
-  const currentSubtopic = getSubtopicById(currentSubtopicId);
+  const currentSubtopic = getSubtopicById(currentSubtopicId, language);
   const currentStepIndex = Math.min(
     visitedSteps[currentSubtopicId] || 0,
     currentSubtopic.steps.length - 1
@@ -92,6 +97,14 @@ export default function App() {
     setCurrentSubtopicId(id);
     try {
       localStorage.setItem('maths_board_subtopic', id);
+    } catch {}
+  };
+
+  // Update language
+  const handleChangeLanguage = (lang: Language) => {
+    setLanguage(lang);
+    try {
+      localStorage.setItem('maths_board_language', lang);
     } catch {}
   };
 
@@ -195,9 +208,11 @@ export default function App() {
         onToggleMotion={() => setIsMotionReduced((prev) => !prev)}
         uiScale={uiScale}
         onChangeScale={handleChangeScale}
+        language={language}
+        onChangeLanguage={handleChangeLanguage}
       />
 
-      {/* 2. MAIN STAGE (Scaled cleanly to fit single screen) */}
+      {/* 2. MAIN STAGE */}
       <main
         className="flex-1 w-full relative overflow-hidden bg-[#FAF7F0] min-h-0"
         style={{
@@ -205,10 +220,11 @@ export default function App() {
         }}
       >
         <SlideView
-          key={currentScreenKey}
+          key={`${currentScreenKey}_${language}`}
           step={currentStep}
           subtopic={currentSubtopic}
           onNavigateToStep={handleNavigateToStep}
+          language={language}
         />
       </main>
 
@@ -252,12 +268,14 @@ export default function App() {
         onPrevStep={handlePrevStep}
         onNextStep={handleNextStep}
         onSelectStepIndex={handleSelectStepIndex}
+        language={language}
       />
 
       {/* 6. TEACHER HELP MODAL */}
       <TeacherHelpModal
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
+        language={language}
       />
     </div>
   );

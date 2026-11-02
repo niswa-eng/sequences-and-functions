@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Step, Subtopic } from '../../types';
+import { Language, Step, Subtopic } from '../../types';
 import { MathText } from '../common/MathText';
 import { SequenceStrip } from '../visuals/SequenceStrip';
 import { PatternBuilder } from '../visuals/PatternBuilder';
@@ -8,12 +8,14 @@ import { FunctionMachine } from '../visuals/FunctionMachine';
 import { MappingTable } from '../visuals/MappingTable';
 import { NumberLine } from '../visuals/NumberLine';
 import { WorkingSpace } from '../practice/WorkingSpace';
-import { ChevronRight, RotateCcw, Columns2 } from 'lucide-react';
+import { ChevronRight, RotateCcw, Columns2, BookOpen } from 'lucide-react';
+import { subtopicTranslations, uiTranslations } from '../../content/translations';
 
 interface SlideViewProps {
   step: Step;
   subtopic: Subtopic;
   onNavigateToStep?: (stepId: string) => void;
+  language?: Language;
 }
 
 export type SplitRatio = '50-50' | '40-60' | '60-40';
@@ -22,9 +24,13 @@ export const SlideView: React.FC<SlideViewProps> = ({
   step,
   subtopic,
   onNavigateToStep,
+  language = 'en',
 }) => {
   const [revealedStepIdx, setRevealedStepIdx] = useState<number>(0);
   const [splitRatio, setSplitRatio] = useState<SplitRatio>('50-50');
+
+  const t = uiTranslations[language] || uiTranslations.en;
+  const currentSubtopicMeta = subtopicTranslations[language]?.[subtopic.id] || subtopicTranslations.en[subtopic.id];
 
   const renderVisualComponent = () => {
     if (!step.componentType || step.componentType === 'None') return null;
@@ -70,11 +76,55 @@ export const SlideView: React.FC<SlideViewProps> = ({
 
   const colClasses = getColClasses();
 
+  // Keyword helper banner when language is Indonesian or Uzbek
+  const renderKeywordsBanner = () => {
+    if (language === 'en') return null;
+    const keywords = currentSubtopicMeta.keywords;
+    if (!keywords || keywords.length === 0) return null;
+
+    return (
+      <div className="mb-2 p-2 bg-[#F1F5F9] rounded-xl border border-[#CBD5E1] flex flex-col gap-1">
+        <div className="flex items-center gap-1.5 text-xs font-black text-[#0F2042]">
+          <BookOpen className="w-3.5 h-3.5 text-[#1D70B8]" />
+          <span>{t.subtopicKeywords}</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {keywords.map((kw, idx) => (
+            <div
+              key={idx}
+              className="inline-flex items-center gap-1 bg-white px-2 py-0.5 rounded-lg border border-[#CBD5E1] text-xs shadow-2xs"
+            >
+              <span className="font-extrabold text-[#0F2042]">{kw.local}</span>
+              <span className="text-[#94A3B8]">→</span>
+              <span className="font-mono font-bold text-[#1D70B8] bg-[#EFF6FF] px-1 rounded">
+                {kw.en}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   // LEFT COLUMN: LESSON MATERIAL
   const renderLeftMaterial = () => {
     // 1. PRACTICE QUESTION
     if (step.type === 'practice' && step.practiceQuestion) {
       const practiceSteps = subtopic.steps.filter((s) => s.type === 'practice');
+
+      const levelLabel =
+        step.practiceLevel === 'L1'
+          ? t.level1
+          : step.practiceLevel === 'L2'
+          ? t.level2
+          : t.level3;
+
+      const levelShort =
+        step.practiceLevel === 'L1'
+          ? t.basic
+          : step.practiceLevel === 'L2'
+          ? t.medium
+          : t.challenge;
 
       return (
         <div className="flex flex-col h-full justify-between">
@@ -83,8 +133,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#CBD5E1]">
               <div className="flex flex-wrap items-center gap-1">
                 {(['L1', 'L2', 'L3'] as const).map((lvl) => {
-                  const label =
-                    lvl === 'L1' ? 'L1' : lvl === 'L2' ? 'L2' : 'L3';
+                  const label = lvl;
                   const isCurrentLevel = step.practiceLevel === lvl;
 
                   return (
@@ -127,9 +176,12 @@ export const SlideView: React.FC<SlideViewProps> = ({
               </div>
 
               <span className="text-xs font-bold text-[#64748B]">
-                Q{step.practiceQuestion.questionNumber} of 9
+                {t.question} {step.practiceQuestion.questionNumber} {t.questionOf}
               </span>
             </div>
+
+            {/* Bilingual Keywords Banner (if ID or UZ) */}
+            {renderKeywordsBanner()}
 
             {/* Question Label */}
             <div className="flex items-center gap-2 mb-2">
@@ -137,14 +189,10 @@ export const SlideView: React.FC<SlideViewProps> = ({
                 className="px-2.5 py-0.5 rounded-lg font-black text-sm text-white shadow-xs"
                 style={{ backgroundColor: subtopic.themeColor.primary }}
               >
-                Question {step.practiceQuestion.questionNumber}
+                {t.question} {step.practiceQuestion.questionNumber}
               </span>
               <span className="text-sm font-bold text-[#64748B]">
-                {step.practiceLevel === 'L1'
-                  ? 'Basic'
-                  : step.practiceLevel === 'L2'
-                  ? 'Medium'
-                  : 'Challenge'}
+                {levelShort}
               </span>
             </div>
 
@@ -192,7 +240,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
           </div>
 
           <div className="pt-2 border-t border-[#E2E8F0] text-xs font-semibold text-[#64748B]">
-            Write working in the whiteboard on the right.
+            {t.writeWorkingPrompt}
           </div>
         </div>
       );
@@ -208,9 +256,12 @@ export const SlideView: React.FC<SlideViewProps> = ({
             </span>
           )}
 
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0F2042] mb-3">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0F2042] mb-2">
             {step.title}
           </h1>
+
+          {/* Bilingual Keywords Banner (if ID or UZ) */}
+          {renderKeywordsBanner()}
 
           {step.keyTerms && step.keyTerms.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 mb-4">
@@ -261,13 +312,16 @@ export const SlideView: React.FC<SlideViewProps> = ({
               className="px-2 py-0.5 rounded-lg font-black text-xs text-white"
               style={{ backgroundColor: subtopic.themeColor.primary }}
             >
-              Worked Example
+              {t.workedExample}
             </span>
           </div>
 
+          {/* Bilingual Keywords Banner (if ID or UZ) */}
+          {renderKeywordsBanner()}
+
           <div className="bg-[#F8FAFC] rounded-xl border border-[#CBD5E1] p-2.5 shadow-xs">
             <span className="text-xs font-bold text-[#64748B] uppercase tracking-wide block">
-              Problem
+              {t.problem}
             </span>
             <div className="text-lg sm:text-xl font-black text-[#0F2042] leading-snug">
               <MathText>{we.problem}</MathText>
@@ -313,7 +367,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
               className="px-4 py-1.5 rounded-xl text-white font-black text-sm flex items-center gap-1 disabled:opacity-40 shadow-xs transition-transform active:scale-95 cursor-pointer"
               style={{ backgroundColor: subtopic.themeColor.primary }}
             >
-              <span>Next step</span>
+              <span>{t.nextStep}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
 
@@ -322,7 +376,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
               className="px-3 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-[#475569] font-bold text-sm flex items-center gap-1 hover:bg-[#F1F5F9] transition-transform active:scale-95 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
+              <span>{t.reset}</span>
             </button>
           </div>
         </div>
@@ -341,9 +395,12 @@ export const SlideView: React.FC<SlideViewProps> = ({
             </h1>
           </div>
 
+          {/* Bilingual Keywords Banner (if ID or UZ) */}
+          {renderKeywordsBanner()}
+
           <div className="bg-[#FFF1F2] rounded-xl border border-[#FECDD3] p-3 shadow-xs">
             <span className="text-xs font-black text-[#BE123C] uppercase tracking-wide block mb-0.5">
-              Common Mistake
+              {t.commonMistake}
             </span>
             <div className="text-base sm:text-lg font-extrabold text-[#9F1239] leading-snug">
               <MathText>{mc.misconception}</MathText>
@@ -352,7 +409,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
 
           <div className="bg-[#F0FDF4] rounded-xl border border-[#BBF7D0] p-3 shadow-xs">
             <span className="text-xs font-black text-[#15803D] uppercase tracking-wide block mb-0.5">
-              Correct Approach
+              {t.correctApproach}
             </span>
             <div className="text-base sm:text-lg font-extrabold text-[#166534] leading-snug">
               <MathText>{mc.correction}</MathText>
@@ -361,7 +418,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
 
           <div className="bg-[#F8FAFC] rounded-xl border border-[#CBD5E1] p-3 shadow-xs">
             <span className="text-xs font-black text-[#475569] uppercase tracking-wide block mb-0.5">
-              Key Rule to Remember
+              {t.keyRuleToRemember}
             </span>
             <div className="text-base sm:text-lg font-black text-[#0F2042] leading-snug">
               <MathText>{mc.takeaway}</MathText>
@@ -381,6 +438,9 @@ export const SlideView: React.FC<SlideViewProps> = ({
             </h1>
           </div>
 
+          {/* Bilingual Keywords Banner (if ID or UZ) */}
+          {renderKeywordsBanner()}
+
           <div className="space-y-2">
             {step.vocabList.map((item, idx) => (
               <div
@@ -395,7 +455,8 @@ export const SlideView: React.FC<SlideViewProps> = ({
                 </p>
                 {item.example && (
                   <p className="text-xs font-semibold text-[#64748B] italic">
-                    Example: {item.example}
+                    {language === 'id' ? 'Contoh: ' : language === 'uz' ? 'Misol: ' : 'Example: '}
+                    {item.example}
                   </p>
                 )}
               </div>
@@ -431,6 +492,9 @@ export const SlideView: React.FC<SlideViewProps> = ({
           )}
         </div>
 
+        {/* Bilingual Keywords Banner (if ID or UZ) */}
+        {renderKeywordsBanner()}
+
         {step.sentences && step.sentences.length > 0 && (
           <div className="space-y-1 bg-white/70 rounded-xl p-2.5 border border-[#CBD5E1]/60">
             {step.sentences.map((sent, idx) => (
@@ -453,14 +517,14 @@ export const SlideView: React.FC<SlideViewProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col p-2 sm:p-3 overflow-hidden select-none">
-      {/* Subtle Split Ratio Toolbar */}
+      {/* Split Ratio Toolbar */}
       <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#CBD5E1]/60">
         <div className="flex items-center gap-2">
           <span className="text-xs font-extrabold uppercase tracking-wider text-[#64748B]">
-            Display:
+            {t.displayLabel}
           </span>
           <span className="text-xs sm:text-sm font-black text-[#0F2042]">
-            Left: Material • Right: Whiteboard
+            {t.leftMaterial} • {t.rightWhiteboard}
           </span>
         </div>
 
@@ -510,7 +574,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
 
         {/* SISI KANAN: PAPAN TULIS */}
         <div className={`${colClasses.right} h-full transition-all`}>
-          <WorkingSpace themeColor={subtopic.themeColor.primary} />
+          <WorkingSpace themeColor={subtopic.themeColor.primary} language={language} />
         </div>
       </div>
     </div>

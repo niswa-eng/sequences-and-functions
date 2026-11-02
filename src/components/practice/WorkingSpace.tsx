@@ -1,94 +1,98 @@
 import React, { useState } from 'react';
-import { Grid, AlignJustify, Square, Crosshair } from 'lucide-react';
-import { WorkingGridType } from '../../types';
+import { AlignJustify, Square, Crosshair } from 'lucide-react';
+import { Language, WorkingGridType } from '../../types';
+import { uiTranslations } from '../../content/translations';
 
 interface WorkingSpaceProps {
   className?: string;
   themeColor?: string;
+  language?: Language;
 }
 
 export const WorkingSpace: React.FC<WorkingSpaceProps> = ({
   className = '',
   themeColor = '#1D70B8',
+  language = 'en',
 }) => {
   const [gridType, setGridType] = useState<WorkingGridType>('square');
+  const t = uiTranslations[language] || uiTranslations.en;
 
   return (
     <div className={`relative flex flex-col h-full rounded-3xl border-3 border-[#CBD5E1] bg-white overflow-hidden shadow-sm ${className}`}>
       {/* Top Bar for Whiteboard Board with Background Selector */}
-      <div className="flex items-center justify-between px-5 py-3 border-b-2 border-[#CBD5E1] bg-[#F8FAFC]">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-black text-[#0F2042]">
-            Whiteboard Board
+      <div className="flex items-center justify-between px-3 sm:px-5 py-2 sm:py-3 border-b-2 border-[#CBD5E1] bg-[#F8FAFC]">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-xl sm:text-2xl font-black text-[#0F2042] truncate">
+            {t.workingSpace}
           </span>
-          <span className="text-sm font-bold text-[#64748B] hidden sm:inline">
-            (Papan Tulis / Notes)
+          <span className="text-xs sm:text-sm font-bold text-[#64748B] hidden md:inline truncate">
+            {t.whiteboardNotes}
           </span>
         </div>
 
         {/* Background grid toggle */}
-        <div className="flex items-center gap-1.5 p-1 bg-white rounded-xl border border-[#CBD5E1]">
+        <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-white rounded-xl border border-[#CBD5E1]">
           <button
             onClick={() => setGridType('blank')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1 transition-all ${
               gridType === 'blank'
-                ? 'bg-[#0F2042] text-white shadow-sm'
+                ? 'bg-[#0F2042] text-white shadow-xs'
                 : 'text-[#64748B] hover:text-[#0F2042]'
             }`}
-            title="Blank background"
+            title={t.blank}
           >
-            <span>Blank</span>
+            <span>{t.blank}</span>
           </button>
 
           <button
             onClick={() => setGridType('dot')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1 transition-all ${
               gridType === 'dot'
-                ? 'bg-[#0F2042] text-white shadow-sm'
+                ? 'bg-[#0F2042] text-white shadow-xs'
                 : 'text-[#64748B] hover:text-[#0F2042]'
             }`}
-            title="Dot grid"
+            title={t.dots}
           >
-            <span>Dots</span>
+            <span>{t.dots}</span>
           </button>
 
           <button
             onClick={() => setGridType('square')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1 transition-all ${
               gridType === 'square'
-                ? 'bg-[#0F2042] text-white shadow-sm'
+                ? 'bg-[#0F2042] text-white shadow-xs'
                 : 'text-[#64748B] hover:text-[#0F2042]'
             }`}
-            title="Square grid paper"
+            title={t.grid}
           >
             <Square className="w-3.5 h-3.5" />
-            <span>Grid</span>
+            <span className="hidden sm:inline">{t.grid}</span>
           </button>
 
           <button
             onClick={() => setGridType('lined')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1 transition-all ${
               gridType === 'lined'
-                ? 'bg-[#0F2042] text-white shadow-sm'
+                ? 'bg-[#0F2042] text-white shadow-xs'
                 : 'text-[#64748B] hover:text-[#0F2042]'
             }`}
-            title="Lined paper"
+            title={t.lined}
           >
             <AlignJustify className="w-3.5 h-3.5" />
-            <span>Lined</span>
+            <span className="hidden sm:inline">{t.lined}</span>
           </button>
 
           <button
             onClick={() => setGridType('axes')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-all ${
+            className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1 transition-all ${
               gridType === 'axes'
-                ? 'bg-[#0F2042] text-white shadow-sm'
+                ? 'bg-[#0F2042] text-white shadow-xs'
                 : 'text-[#64748B] hover:text-[#0F2042]'
             }`}
-            title="Coordinate axes"
+            title={t.axes}
           >
             <Crosshair className="w-3.5 h-3.5" />
-            <span>Axes</span>
+            <span className="hidden sm:inline">{t.axes}</span>
           </button>
         </div>
       </div>
